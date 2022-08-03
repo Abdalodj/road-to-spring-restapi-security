@@ -11,20 +11,25 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-@Entity
-@Table
+@Entity(name = "Student")
+@Table(name = "student", uniqueConstraints = {@UniqueConstraint(name = "student_email_unique", columnNames = "email")})
 @SQLDelete(sql = "UPDATE student SET deleted_at = now() WHERE id=?")
 @Where(clause = "deleted_at IS NULL")
 public class Student {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
-  private String name;
-  @Column(unique = true)
+  @Column(name = "first_name", nullable = false, columnDefinition = "TEXT")
+  private String first_name;
+
+  @Column(name = "last_name", nullable = false, columnDefinition = "TEXT")
+  private String last_name;
+  @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(100)", length = 100)
   private String email;
   private LocalDate birth;
   private LocalDateTime deleted_at = null;
@@ -35,15 +40,17 @@ public class Student {
   public Student() {
   }
 
-  public Student(Long id, String name, String email, LocalDate birth) {
+  public Student(Long id, String first_name, String last_name, String email, LocalDate birth) {
     this.id = id;
-    this.name = name;
+    this.first_name = first_name;
+    this.last_name = last_name;
     this.email = email;
     this.birth = birth;
   }
 
-  public Student(String name, String email, LocalDate birth) {
-    this.name = name;
+  public Student(String first_name, String last_name, String email, LocalDate birth) {
+    this.first_name = first_name;
+    this.last_name = last_name;
     this.email = email;
     this.birth = birth;
   }
@@ -56,12 +63,20 @@ public class Student {
     this.id = id;
   }
 
-  public String getName() {
-    return this.name;
+  public String getFirstName() {
+    return this.first_name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setFirstName(String first_name) {
+    this.first_name = first_name;
+  }
+
+  public String getLastName() {
+    return this.last_name;
+  }
+
+  public void setLastName(String last_name) {
+    this.last_name = last_name;
   }
 
   public String getEmail() {
@@ -101,7 +116,8 @@ public class Student {
   public String toString() {
     return "{" +
       " id='" + getId() + "'" +
-      ", name='" + getName() + "'" +
+      ", FirstName='" + getFirstName() + "'" +
+      ", LastName='" + getLastName() + "'" +
       ", email='" + getEmail() + "'" +
       ", birth='" + getBirth() + "'" +
       ", age='" + getAge() + "'" +
